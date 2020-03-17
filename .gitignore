@@ -1,0 +1,8 @@
+# Default ignored files
+/workspace.xml
+.idea
+*.idea
+*.iml
+*.pyc
+*.rar
+*.zip
