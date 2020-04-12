@@ -6,3 +6,11 @@
 *.pyc
 *.rar
 *.zip
+.Rproj.user
+*.txt
+!/dataset/
+.RData
+.httr-oauth
+.Rhistory
+R.Rproj
+
