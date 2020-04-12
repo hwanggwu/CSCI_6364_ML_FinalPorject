@@ -28,7 +28,7 @@ root <- getwd()
 setwd(root)
 
 # set data path
-data_path = file.path(root, 'dataset', fsep = .Platform$file.sep)
+data_path = file.path(root, 'resource', 'dataset', fsep = .Platform$file.sep)
 convid_by_time_path = file.path(data_path, 'time_series_covid19_confirmed_global.csv', fsep = .Platform$file.sep)
 
 # load data

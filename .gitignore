@@ -6,11 +6,15 @@
 *.pyc
 *.rar
 *.zip
+*.log
+*.jsonl
 .Rproj.user
 *.txt
-!/dataset/
+!/src/resource/dataset/
 .RData
 .httr-oauth
 .Rhistory
 R.Rproj
 
+!/src/resource/access/twitter_access.json
+!/.twarc
