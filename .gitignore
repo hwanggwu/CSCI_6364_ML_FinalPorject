@@ -16,5 +16,5 @@
 .Rhistory
 R.Rproj
 
-!/src/resource/access/twitter_access.json
 !/.twarc
+!/resource/access/twitter_access.json

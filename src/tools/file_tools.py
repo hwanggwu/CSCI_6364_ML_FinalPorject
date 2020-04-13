@@ -1,8 +1,8 @@
 import json
-
 import pandas as pd
 import os
 import struct
+import csv
 import numpy as np
 import _pickle as pickle
 
@@ -64,6 +64,12 @@ def load_pickle(path):
 
 def save_csv(df, path):
     df.to_csv(path)
+
+
+def append_csv(row, path):
+    with open(path, 'a+') as f:
+        csv_write = csv.writer(f)
+        csv_write.writerow(row)
 
 
 # load
