@@ -16,9 +16,9 @@
 library(tidyverse)
 library(ggplot2)
 library(scales)
-library(rvest)
+# library(rvest)
 # library(twitteR)
-library(rtweet)
+# library(rtweet)
 
 ## path
 # set root path
@@ -30,14 +30,17 @@ setwd(root)
 # set data path
 data_path = file.path(root, 'resource', 'dataset', fsep = .Platform$file.sep)
 convid_by_time_path = file.path(data_path, 'time_series_covid19_confirmed_global.csv', fsep = .Platform$file.sep)
-sentiment_path = file.path(data_path, '2020-03', 'coronavirus-tweet-summary.csv', fsep = .Platform$file.sep)
-  
+sentiment_path_03 = file.path(data_path, '2020-03', 'coronavirus-tweet-summary.csv', fsep = .Platform$file.sep)
+sentiment_path_04 = file.path(data_path, '2020-04', 'coronavirus-tweet-summary.csv', fsep = .Platform$file.sep)
 
 # load data
 data_convid_by_time <- read.table(file = convid_by_time_path, header = TRUE, sep = ',', 
                                   quote = "", fill = F, strip.white = T)
-data_sentiment <- read.table(file = sentiment_path, header = TRUE, sep = ',', 
+data_sentiment_03 <- read.table(file = sentiment_path_03, header = TRUE, sep = ',', 
                                   quote = "", fill = F, strip.white = T)
+data_sentiment_04 <- read.table(file = sentiment_path_04, header = TRUE, sep = ',', 
+                             quote = "", fill = F, strip.white = T)
+
 col_names <- colnames(data_convid_by_time)
 data_american_covid <- data_convid_by_time %>% 
   filter(Country.Region == 'US') %>%
@@ -80,10 +83,9 @@ temp_df$actual_increase <- temp_df$actual - c(0,temp_df$actual)[0:80]
 
 # add score, rs, fs
 temp1 <- rep(0,39)
-temp2 <- rep(0,10)
-temp_df$score <- c(c(temp1,data_sentiment$score),temp2)
-temp_df$rs <- c(c(temp1,data_sentiment$rs),temp2)
-temp_df$fs <- c(c(temp1,data_sentiment$fs),temp2)
+temp_df$score <- c(c(temp1,data_sentiment$score),data_sentiment_04$score)
+temp_df$rs <- c(c(temp1,data_sentiment$rs),data_sentiment_04$rs)
+temp_df$fs <- c(c(temp1,data_sentiment$fs),data_sentiment_04$fs)
 
 # we can find that the actual confirmed was much less than predicted
 ggplot(temp_df, aes(x=date)) + 
@@ -170,7 +172,7 @@ ggplot(data_sentiment, aes(x = rs, y = fs)) +
 # 
 temp_df_03 <- temp_df %>%
   filter(date > '2020-02-29') %>%
-  filter(date < '2020-04-01')
+  filter(date < '2020-04-11')
 
 # plot actual increase
 ggplot(temp_df_03, aes(x=date)) + 
@@ -183,7 +185,10 @@ ggplot(temp_df_03, aes(x=date)) +
   geom_line(aes(y=fs, color="fs")) 
 
 # plot fs_scale
-temp_df_03$fs_scale <- scale(temp_df_03$fs,center=T,scale=T)
+# center = True
+# temp_df_03$fs_scale <- scale(temp_df_03$fs,center=T,scale=T)
+# center = False
+temp_df_03$fs_scale <- scale(temp_df_03$fs,center=F,scale=T)
 ggplot(temp_df_03, aes(x=date)) + 
   geom_point(aes(y=fs_scale)) + 
   geom_line(aes(y=fs_scale, color="fs_scale")) 
@@ -193,10 +198,12 @@ ggplot(temp_df_03, aes(x=date)) +
 init_confirmed <- 74
 day <- 14
 start_day <- '2020-03-01'
-end_day <- '2020-03-31'
+end_day <- '2020-04-10'
 confirmed_list <- confirmed_by_day_with_influence(basic_infection_factor, latent_period, generation_gap, init_confirmed, temp_df_03, 
                                             day, start_day, end_day)
-temp_df_03$fs_predict <- integer(confirmed_list)
+temp_df_03$fs_predict <- as.integer(confirmed_list)
+temp_df_03$predict_increase <- temp_df_03$fs_predict - c(0,temp_df_03$fs_predict)[0:41]
+
 
 # plot actual and fs_predict
 ggplot(temp_df_03, aes(x=date)) + 
@@ -210,63 +217,56 @@ ggplot(temp_df_03, aes(x=date)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5))
 
 
+# plot actual_increase and fs_predict_increase
+ggplot(temp_df_03, aes(x=date)) + 
+  geom_point(aes(y=actual_increase), ) + 
+  geom_line(aes(y=actual_increase, color="actual_increase"))+
+  geom_point(aes(y=predict_increase)) + 
+  geom_line(aes(y=predict_increase, color="predict_increase")) +
+  # ylim(0, 10**6) +
+  # scale_y_continuous(breaks=seq(0, 10, 5)) +
+  scale_x_date(labels = date_format("%Y/%m/%d")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5))
 
+# center前，预测数值过高
+# center后，预测还行，但是还是不够准确：在fs-scale为负的时候
+
+
+
+
+
+
+
+
+# try linear regression
 # there is not a linear relationship between rs,fs and actual_increase
 linear_relation <- lm(actual_increase ~ fs+rs,data=temp_df_03)
 predict(linear_relation, temp_df_03)
 plot(temp_df_03$actual_increase,temp_df_03$fs + temp_df_03$rs,col = "blue",main = "Regression",
      abline(lm(fs+rs~actual_increase, data=temp_df_03)),cex = 1.3,pch = 16,xlab = "actual_increase",ylab = "fs+rs")
 
-# moist sigmoid(actual_increase) == 1
+
+# try logistic regression
+# most sigmoid(actual_increase) == 1, not a binary problem
 # model<-glm(formula = sigmoid(actual_increase) ~ rs+fs,data=temp_df_03,family = binomial('logit'))
 
 
+# try polynomial regression
+model <- lm(actual_increase ~ poly(fs_scale,3), data=temp_df_03)
+summary(model)
+confint(model, level=0.95)
 
+plot(fitted(model),residuals(model))
 
-# collect the data in range 03/20 ~ 03/24
+predicted.intervals <- predict(model,data.frame(fs_scale=temp_df_03$fs_scale),interval='confidence',
+                               level=0.99)
 
-# crawl web pages -- but failed
-html_data <- read_html('https://twitter.com/bbcchinese/status/1238068141995024385')
-# https://twitter.com/bbcchinese/status/1249200624727711744
-
-html_content <- html_data %>% 
-  html_nodes('div.css-901oao.r-hkyrab') %>% 
-  html_text()
-
-# css-901oao r-hkyrab r-1qd0xha r-1blvdjr r-16dba41 r-ad9z0x r-bcqeeo r-bnwqim r-qvutc0
-
-# some tweet id
-1238068141995024385
-1238068142322192385
-1238068141395148801
-1238068142288572416
-1238068142305431552
-1238068142259216384
-1238068142552707072
-1238068142825336833
-
-# crawl by twitter api
-api_key = 'TgHNMa7WZE7Cxi1JbkAMQ'
-api_secret = 'SHy9mBMBPNj3Y17et9BF4g5XeqS4y3vkeW24PttDcY'
-
-api_key = '4p0r42c2fG5nRKOe1UbJP1N7W'
-api_secret = 'SpHvrzMtUVVxUErjqFPzko90GA7oiDM8NlqOT8FNHy28Av9M9Q'
-access_token = '229834223-DXyN4o2rGwaX2N4od3xwCoTIk6JDzgcoQlEtw5Xs'
-access_token_secret = '8TsC8azAlYulio8sBWXjwlYbj6SjlLSoyxVPd6KuPDR8N'
-
-token <- create_token(app = "TweeterCatcher",
-                      consumer_key = "XYznzPFOFZR2a39FwWKN1Jp41",
-                      consumer_secret = "CtkGEWmSevZqJuKl6HHrBxbCybxI1xGLqrD5ynPd9jG0SoHZbD")
-
-token <- create_token(app = "TweeterCatcher",
-                      consumer_key = api_key,
-                      consumer_secret = api_secret)
-
-setup_twitter_oauth(api_key, api_secret)
-
-data = searchTwitter('littlecaesars',n=1000)
-
-
+plot(temp_df_03$fs_scale,temp_df_03$actual_increase,col='deepskyblue4',xlab='fs_scale',main='Observed data')
+lines(temp_df_03$fs_scale,predicted.intervals[,1],col='green',lwd=3)
+lines(temp_df_03$fs_scale,predicted.intervals[,2],col='black',lwd=1)
+lines(temp_df_03$fs_scale,predicted.intervals[,3],col='black',lwd=1)
+legend("bottomright",c("Observ.","Predicted"), 
+       col=c("deepskyblue4","green"), lwd=3)
 
 
 
