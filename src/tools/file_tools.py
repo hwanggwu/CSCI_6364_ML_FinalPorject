@@ -67,7 +67,7 @@ def save_csv(df, path):
 
 
 def append_csv(row, path):
-    with open(path, 'a+') as f:
+    with open(path, 'a+', newline="") as f:
         csv_write = csv.writer(f)
         csv_write.writerow(row)
 

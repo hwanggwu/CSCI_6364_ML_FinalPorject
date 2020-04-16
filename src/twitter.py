@@ -22,13 +22,13 @@ asecret = access_dict['asecret']
 t = Twarc(ckey, csecret, atoken, asecret)
 
 
-def load_by_ids(tweet_path, save_path=None):
+def download_by_ids(tweet_path, save_path=None):
 
-    df = pd.DataFrame(columns=['tweet_id', 'date', 'retweet_count', 'favorite_count', 'score'])
+    # df = pd.DataFrame(columns=['tweet_id', 'date', 'retweet_count', 'favorite_count', 'score'])
     if save_path is not None:
         is_exist = ft.is_exist(save_path)
         if not is_exist:
-            ft.save_csv(df, save_path)
+            ft.append_csv(['tweet_id', 'date', 'retweet_count', 'favorite_count', 'score'], save_path)
 
     for tweet in t.hydrate(open(tweet_path)):
 
@@ -37,12 +37,13 @@ def load_by_ids(tweet_path, save_path=None):
         date = datetime.strptime(created_at, '%a %b %d %H:%M:%S %z %Y')
         re_status = tweet.get('retweeted_status', {})
         retweet_count = re_status.get('retweet_count', 0)
-        favorite_count = re_status.get('retweeted_status', 0)
+        favorite_count = re_status.get('favorite_count', 0)
         full_text = tweet.get('full_text', '')
         score = nt.sentiment(full_text)
 
-        row = {'tweet_id': tweet_id, 'date': date, 'retweet_count': retweet_count,
-               'favorite_count': favorite_count, 'score': score}
+        # row = {'tweet_id': tweet_id, 'date': date, 'retweet_count': retweet_count,
+        #        'favorite_count': favorite_count, 'score': score}
+        row = [tweet_id, date, retweet_count, favorite_count, score]
         # df = df.append(row, ignore_index=True)
         print(row)
         if save_path is not None:
