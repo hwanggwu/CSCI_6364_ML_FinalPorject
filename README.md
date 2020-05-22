@@ -71,7 +71,11 @@ Figure 6. The traditional epidemic model
 
 In the first generation, the number of confirmed patients is 1. In the next generation, this confirmed patient can infect R0 people, so in the second generation, the total confirmed patients are 1 + 1\*R0. By that analogy, in the n generation, the total confirmed patients show as formula (1).
 
+![image](/resource/dataset/picture/12.png)
+
 In each generation, the increased confirmed patients are . The incubation interval is M, and we assume that the number of people in each interval grows every day at the same rate, so the daily increase confirmed patients show as formula (2).
+
+![image](/resource/dataset/picture/13.png)
 
   1. **NLP (Twitter Sentiment Analysis) optimization**
 
@@ -85,6 +89,8 @@ Figure 7. the time series of the prediction by the traditional epidemic model(th
 
 By using the adjusted model, we re-make the prediction. The prediction shows as figure 8.
 
+![image](/resource/dataset/picture/14.png)
+
 From figure 8, the growth rate is controlled well by fs, and the prediction of the adjusted model is closed to the actual confirmed patients. However, there are some places that have large jumps due to the obvious fluctuation of the fs. We wish the curve can be smoother and more closed to the actual confirmed patient. Therefore, we should adjust the exponent part of the formula (2).
 
 n is equal to day mod M and we wish n decreases when day increases, so we set . When day is closed to the infinite, the n will close to the , that prevents the exponent become too large. Additionally, we set , that means as the day increases, the daily increased patients will decrease. Formula (5) shows the traditional epidemic model after changing the base and exponent.
@@ -92,6 +98,8 @@ n is equal to day mod M and we wish n decreases when day increases, so we set . 
 ![image](/resource/dataset/picture/8.png)
 
 Figure 8. the time series of the prediction by the adjusted(1) traditional epidemic model(the blue line) and actual confirmed patients (the red line)
+
+![image](/resource/dataset/picture/15.png)
 
 The day, actual daily increases, and fs are known, so we can use the least square method to calculate the k and m. Finally, we get the k=0.0350 and m=4.8454. If day equal to 0, the equal to which is very closed to the . This coincidence shows the initial value of M which we choose fits the actual data well.
 
