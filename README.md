@@ -33,7 +33,7 @@ The first dataset is the Novel Corona Virus (COVID-19) epidemiological data from
 
 The second dataset is the Twitter corpus. The Twitter Developer can use the Twitter API to analyze the contents by NLP. We used the collected data from Emily Chen, who provides the tweet id related to coronavirus in GitHub. He leveraged Twitter&#39;s streaming API to follow specified accounts and collect real-time tweets that mention specific keywords. Figure 1 shows the part of the keywords by which the corpus is collected.
 
-![](/resource/picture/1..png)
+![image](/resource/dataset/picture/1.png)
 
 Figure 1. Coronavirus Keywords sample
 
