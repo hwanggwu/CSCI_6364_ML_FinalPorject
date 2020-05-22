@@ -39,25 +39,25 @@ Figure 1. Coronavirus Keywords sample
 
 Figure 2 shows the data collected from twitter by tweet id. Retweet\_count is the forwarding number of each twitter. Favorite\_count is the likes number of each twitter. The score is the sentiment score calculated by afinn package.
 
-![](RackMultipart20200522-4-1n00qm3_html_3372f68ca1fe8e23.png)
+![image](/resource/dataset/picture/2.png)
 
 Figure 2. the data of each tweet
 
 Figure 3 shows the statistical data which is grouped by day. The score is the average of the sentiment score from each day. rs is the average of the product of each twitter&#39;s sentiment score and its retweet\_count. fs is the average of the product of each twitter&#39;s sentiment score and its favorite\_count.
 
-![](RackMultipart20200522-4-1n00qm3_html_f180b371e4b7c3b7.png)
+![image](/resource/dataset/picture/3.png)
 
 Figure 3. the summary of every day
 
 If twitter has a high forwarding number and likes number, this twitter should have a bigger influence than twitter which has a low forwarding number and likes number. Therefore, we use rs and fs to describe people&#39;s daily sentiment instead of the average score. Additionally, from figure 4, there is an obvious linear relationship between rs and fs, so we just choose one of them to make prediction. In this experiment, we choose fs.
 
-![](RackMultipart20200522-4-1n00qm3_html_db0a34ce6d511a25.png)
+![image](/resource/dataset/picture/4.png)
 
 Figure 4. the scatter points of the rs and fs
 
 Figure 5 shows the time series of fs after scaling. In the beginning, the fs is less than zero. With time goes by, the fs is closed to zero and become more and more positive. This meets our assumption that people will more and more positive about this epidemic.
 
-![](RackMultipart20200522-4-1n00qm3_html_9ebaa832b4e5d605.png)
+![image](/resource/dataset/picture/5.png)
 
 Figure 5. the time series of fs after scaled
 
@@ -65,7 +65,7 @@ Figure 5. the time series of fs after scaled
 
 The traditional epidemic model is based on a basic infectious mechanism. In this model, the defined variables include Incubation interval(M): the time interval of two infectious generations, the basic infection rate(R0): the people which one confirmed patient can infect, and generation(n): n = day mod Incubation interval(M).
 
-![](RackMultipart20200522-4-1n00qm3_html_ac0015f8f2bcae1c.png)
+![image](/resource/dataset/picture/6.png)
 
 Figure 6. The traditional epidemic model
 
@@ -79,7 +79,7 @@ We assume the initial R0 is 3 and the initial M is 4 to do a prediction by the t
 
 There are two ways to control the growth rate of the traditional epidemic model: adjust the base and the exponent part of the formula (2). We wish the sentiment score from twitter can adjust the initial R0. When the sentiment score is positive, which means most people think the situation is good, we wish the base can decrease; when the sentiment score is negative, which means most people think the situation is bad, we wish the base can increase; when the sentiment score is zero, we wish the base can equal to R0. If we change the denominator into 2\*R0 and the parameter t into fs, the sigmoid function can meet our requirements very well. Formula (4) shows the traditional epidemic model after changing the base.
 
-![](RackMultipart20200522-4-1n00qm3_html_b60dace2a072387d.png)
+![image](/resource/dataset/picture/7.png)
 
 Figure 7. the time series of the prediction by the traditional epidemic model(the blue line) and actual confirmed patients (the red line)
 
@@ -89,7 +89,7 @@ From figure 8, the growth rate is controlled well by fs, and the prediction of t
 
 n is equal to day mod M and we wish n decreases when day increases, so we set . When day is closed to the infinite, the n will close to the , that prevents the exponent become too large. Additionally, we set , that means as the day increases, the daily increased patients will decrease. Formula (5) shows the traditional epidemic model after changing the base and exponent.
 
-![](RackMultipart20200522-4-1n00qm3_html_bb88f1d44097340f.png)
+![image](/resource/dataset/picture/8.png)
 
 Figure 8. the time series of the prediction by the adjusted(1) traditional epidemic model(the blue line) and actual confirmed patients (the red line)
 
@@ -103,15 +103,15 @@ Because our model depends on the fs and we cannot know the future&#39;s fs, we m
 
 we applied into our prediction model to describe how coronavirus will develop in the following 30 days. Figure 10 and 11 shows the results.
 
-![](RackMultipart20200522-4-1n00qm3_html_351edf5c40defb4b.png)
+![image](/resource/dataset/picture/9.png)
 
 Figure 9. The comparison of actual confirmed cases and our prediction model, blue lane is the prediction and the red line is the actual situation.
 
-![](RackMultipart20200522-4-1n00qm3_html_ace6cda896c2f74a.png)
+![image](/resource/dataset/picture/10.png)
 
 Figure 10. The prediction of confirmed patients by the adjusted model
 
-![](RackMultipart20200522-4-1n00qm3_html_f4d98bff363815eb.png)
+![image](/resource/dataset/picture/11.png)
 
 Figure 11. The daily increased patients. Before 04/10, the curve is predicted by the actual fs. After 04/10, the curve is predicted by the assumed fs.
 
