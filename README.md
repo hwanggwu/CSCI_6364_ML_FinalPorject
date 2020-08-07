@@ -1,4 +1,4 @@
-# Prediction model of CoronaVirus (COVID-19) at New York City
+# Prediction model of CoronaVirus (COVID-19) in the U.S.(April,2020 - May,2020)
 
 Ming Gong and Henian Wang will expore the prediction model of novel coronavirus (COVID-19) at New York City . Mathematical statistics and support vectorregression analysis are used for comprehensive prediction analysis. 
    
